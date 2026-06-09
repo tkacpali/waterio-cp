@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Waterio CP">
+<meta name="theme-color" content="#1a7ab8">
+<title>Waterio — Cenová ponuka</title>
+<style>
+:root{--bl:#1a7ab8;--blp:#e8f4fc;--bld:#0f5a8a;--gr:#f5f7fa;--gr2:#e8edf3;--gr3:#c5cdd8;--tx:#1a2332;--tx2:#5a6a7e;--wh:#fff;--r:12px;--rs:8px;--grn:#2e7d32;--org:#e65100}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:var(--gr);color:var(--tx)}
+.hdr{background:var(--wh);border-bottom:1px solid var(--gr2);padding:0 14px;display:flex;align-items:center;justify-content:space-between;height:54px;position:sticky;top:0;z-index:100}
+.logo{font-size:18px;font-weight:300;letter-spacing:6px;color:var(--bl)}
+.hdr-r{display:flex;align-items:center;gap:8px}
+.cpbadge{font-size:11px;color:var(--tx2);font-weight:600;background:var(--blp);padding:4px 8px;border-radius:6px}
+.bsum{background:var(--bl);color:#fff;border:none;border-radius:var(--rs);padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer}
+.tabs{display:flex;background:var(--wh);border-bottom:1px solid var(--gr2);overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;position:sticky;top:54px;z-index:99}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex-shrink:0;padding:11px 13px;font-size:12px;font-weight:500;color:var(--tx2);border-bottom:3px solid transparent;white-space:nowrap;cursor:pointer;-webkit-user-select:none;user-select:none}
+.tab.on{color:var(--bl);border-bottom-color:var(--bl)}
+.wrap{padding:10px 14px 110px;max-width:700px;margin:0 auto}
+.card{background:var(--wh);border-radius:var(--r);padding:14px;margin-bottom:10px;box-shadow:0 2px 10px rgba(26,122,184,.08)}
+.ctit{font-size:11px;font-weight:700;color:var(--bl);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.g1{margin-bottom:8px}
+.fld label{font-size:11px;color:var(--tx2);margin-bottom:3px;display:block}
+.fld input,.fld select{width:100%;border:1.5px solid var(--gr2);border-radius:var(--rs);padding:8px 10px;font-size:14px;color:var(--tx);background:var(--wh);outline:none;-webkit-appearance:none}
+.fld input:focus,.fld select:focus{border-color:var(--bl)}
+.fld .badge{font-size:11px;color:var(--bld);background:var(--blp);padding:3px 7px;border-radius:5px;margin-left:6px}
+/* ETAPA */
+.etapa{background:var(--wh);border-radius:var(--r);margin-bottom:10px;box-shadow:0 2px 10px rgba(26,122,184,.08);overflow:hidden}
+.ehdr{display:flex;align-items:center;padding:13px 14px;gap:9px;cursor:pointer;-webkit-user-select:none;user-select:none}
+.enum{width:26px;height:26px;border-radius:50%;background:var(--blp);color:var(--bl);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ename{font-size:13px;font-weight:600;flex:1}
+.etot{font-size:13px;font-weight:700;color:var(--bl);min-width:72px;text-align:right}
+.echev{font-size:18px;color:var(--tx2);flex-shrink:0;transition:transform .2s;display:inline-block}
+.echev.op{transform:rotate(180deg)}
+.ebody{display:none;border-top:1px solid var(--gr2)}
+.ebody.op{display:block}
+/* WORK ROW */
+.wrow{padding:11px 14px;border-bottom:1px solid var(--gr)}
+.wrow:last-child{border-bottom:none}
+.wname{font-size:13px;font-weight:500;margin-bottom:2px}
+.whint{font-size:11px;color:var(--tx2);margin-bottom:7px}
+.vbtns{display:flex;flex-wrap:wrap;gap:5px}
+.vbtn{border:1.5px solid var(--gr3);border-radius:16px;padding:5px 10px;font-size:11px;color:var(--tx2);background:var(--wh);cursor:pointer;white-space:nowrap;-webkit-user-select:none;user-select:none}
+.vbtn.on{background:var(--bl);border-color:var(--bl);color:#fff;font-weight:600}
+.vbtn.non.on{background:var(--gr2);border-color:var(--gr3);color:var(--tx2);font-weight:400}
+/* QTY + MULTI ROWS */
+.qrow{display:flex;align-items:center;gap:6px;margin-top:7px;flex-wrap:wrap}
+.qrow label{font-size:11px;color:var(--tx2);flex-shrink:0}
+.qrow input{width:66px;border:1.5px solid var(--gr2);border-radius:var(--rs);padding:5px 7px;font-size:13px;text-align:center;outline:none}
+.qrow input:focus{border-color:var(--bl)}
+.qrow .qu{font-size:11px;color:var(--tx2)}
+.qrow .qdim{font-size:11px;color:var(--tx2);font-style:italic}
+/* MULTI ITEM ROWS (podlahy, steny) */
+.mblock{margin-top:8px}
+.mitem{display:flex;align-items:center;gap:6px;margin-bottom:5px;flex-wrap:wrap}
+.mitem select{flex:1;min-width:140px;border:1.5px solid var(--gr2);border-radius:var(--rs);padding:6px 8px;font-size:12px;color:var(--tx);background:var(--wh);outline:none;-webkit-appearance:none}
+.mitem select:focus{border-color:var(--bl)}
+.mitem input{width:60px;border:1.5px solid var(--gr2);border-radius:var(--rs);padding:5px 7px;font-size:12px;text-align:center;outline:none}
+.mitem input:focus{border-color:var(--bl)}
+.mitem .qu{font-size:11px;color:var(--tx2)}
+.mitem .del{background:none;border:none;color:var(--tx2);font-size:17px;cursor:pointer;padding:0 3px;line-height:1}
+.mitem .rest{font-size:11px;color:var(--org);font-style:italic;flex:0 0 100%}
+.btn-add{margin-top:3px;background:none;border:1.5px dashed var(--gr3);border-radius:var(--rs);padding:5px 10px;font-size:12px;color:var(--tx2);cursor:pointer;width:100%}
+.warn{font-size:11px;color:var(--org);margin-top:4px;font-style:italic}
+.info{font-size:11px;color:var(--grn);margin-top:4px}
+/* BOTTOM */
+.bbar{position:fixed;bottom:0;left:0;right:0;background:var(--wh);border-top:1px solid var(--gr2);padding:9px 14px;display:flex;align-items:center;justify-content:space-between;z-index:100}
+.btxt{display:flex;flex-direction:column}
+.blbl{font-size:11px;color:var(--tx2)}
+.bamt{font-size:20px;font-weight:700;color:var(--bl)}
+.bdph{font-size:11px;color:var(--tx2)}
+.bgen{background:var(--bl);color:#fff;border:none;border-radius:var(--r);padding:12px 18px;font-size:14px;font-weight:700;cursor:pointer}
+/* OVERLAY */
+.ovl{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:flex-end}
+.ovl.op{display:flex}
+.sheet{background:var(--wh);border-radius:20px 20px 0 0;width:100%;max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.shdr{padding:16px 16px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--gr2)}
+.shdr h2{font-size:16px;font-weight:700}
+.bx{background:var(--gr2);border:none;border-radius:50%;width:30px;height:30px;font-size:15px;cursor:pointer;color:var(--tx2)}
+.smeta{padding:10px 16px 10px;border-bottom:1px solid var(--gr2)}
+.slogo{font-size:14px;font-weight:300;letter-spacing:5px;color:var(--bl)}
+.smeta p{font-size:12px;color:var(--tx2);margin-top:2px}
+.sbody{padding:0 16px 8px}
+.stit{font-size:11px;font-weight:700;color:var(--bl);text-transform:uppercase;letter-spacing:.4px;padding:10px 0 3px;border-top:1px solid var(--gr2);margin-top:3px}
+.stit:first-child{border-top:none;margin-top:0}
+.sline{display:flex;justify-content:space-between;align-items:baseline;padding:3px 0;font-size:12px;gap:6px}
+.sline .nm{color:var(--tx);flex:1}
+.sline .un{color:var(--tx2);font-size:10px;flex-shrink:0}
+.sline .pr{font-weight:600;white-space:nowrap}
+.stots{margin:0 16px;border-top:2px solid var(--blp);padding:10px 0}
+.trow{display:flex;justify-content:space-between;padding:3px 0;font-size:13px}
+.trow.big{font-size:16px;font-weight:700;color:var(--bl);border-top:1px solid var(--gr2);padding-top:9px;margin-top:5px}
+.sacts{display:flex;gap:8px;padding:10px 16px 28px}
+.sacts button{flex:1;padding:12px;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;border:none}
+.bpr{background:var(--gr2);color:var(--tx)}
+.bcp{background:var(--bl);color:#fff}
+.pg{display:none}.pg.on{display:block}
+/* KUPELNA toggle */
+.kup-toggle{display:flex;gap:8px;margin-bottom:10px}
+.ktbtn{flex:1;padding:9px 6px;border:1.5px solid var(--gr3);border-radius:var(--rs);font-size:12px;font-weight:500;color:var(--tx2);background:var(--wh);cursor:pointer;text-align:center;-webkit-user-select:none;user-select:none}
+.ktbtn.on{background:var(--blp);border-color:var(--bl);color:var(--bld);font-weight:700}
+.sep{height:1px;background:var(--gr2);margin:10px 0}
+.sec-sub{font-size:11px;font-weight:700;color:var(--tx2);text-transform:uppercase;letter-spacing:.4px;padding:8px 14px 4px;background:var(--gr)}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="logo">WATERIO</div>
+  <div class="hdr-r">
+    <span class="cpbadge" id="cpd">—</span>
+    <button class="bsum" id="btnSum">Súhrn</button>
+  </div>
+</div>
+
+<div class="tabs" id="tabBar">
+  <div class="tab on" data-i="0">Zákazník</div>
+  <div class="tab" data-i="1">Búranie</div>
+  <div class="tab" data-i="2">Konštrukcia</div>
+  <div class="tab" data-i="3">Inštalácie</div>
+  <div class="tab" data-i="4">Povrchy</div>
+  <div class="tab" data-i="5">Kúpeľňa</div>
+  <div class="tab" data-i="6">Finálne</div>
+</div>
+
+<div class="wrap">
+  <!-- TAB 0 -->
+  <div class="pg on" id="pg0">
+    <div class="card">
+      <div class="ctit">Zákazník</div>
+      <div class="g1"><div class="fld"><label>Meno zákazníka</label><input type="text" id="cname" placeholder="Ján Novák"></div></div>
+      <div class="g1"><div class="fld"><label>Adresa / objekt</label><input type="text" id="caddr" placeholder="Hlavná 1, Bratislava"></div></div>
+      <div class="g2">
+        <div class="fld"><label>Číslo CP <span class="badge" id="cpbadge"></span></label><input type="text" id="cpn" placeholder="26-06-01"></div>
+        <div class="fld"><label>Dátum</label><input type="date" id="cpdate" readonly style="background:#f9f9f9;color:#888"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ctit">Rozmery bytu</div>
+      <div class="g3">
+        <div class="fld"><label>Plocha bytu (m²)</label><input type="number" id="dp" value="55" min="5" max="500"></div>
+        <div class="fld"><label>Výška stien (m)</label><input type="number" id="dv" value="2.6" step="0.1" min="2" max="5"></div>
+        <div class="fld"><label>Kúpeľňa (m²)</label><input type="number" id="dk" value="6" min="1" max="50"></div>
+        <div class="fld"><label>Obvod stien (bm)</label><input type="number" id="do_" value="34" min="5" max="300"></div>
+        <div class="fld"><label>Miestnosti (ks)</label><input type="number" id="dm" value="3" min="1" max="15"></div>
+        <div class="fld"><label>Dvere (ks)</label><input type="number" id="dd" value="4" min="0" max="20"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ctit">Typ kúpeľne</div>
+      <div class="kup-toggle">
+        <button class="ktbtn on" data-kup="spolu" onclick="setKup('spolu',this)">WC + kúpeľňa spolu</button>
+        <button class="ktbtn" data-kup="osobit" onclick="setKup('osobit',this)">WC a kúpeľňa osobitne</button>
+      </div>
+      <div id="kup-spolu-info" style="font-size:12px;color:var(--tx2)">Jedna miestnosť — spoločné dvere, obklady, dlažba, revízne dvierka.</div>
+      <div id="kup-osobit-info" style="display:none;font-size:12px;color:var(--tx2)">Dve miestnosti — zadaj plochy a dvere pre každú samostatne.</div>
+      <div id="kup-osobit-fields" style="display:none;margin-top:10px">
+        <div class="g2">
+          <div class="fld"><label>Kúpeľňa — plocha (m²)</label><input type="number" id="dk2" value="4" min="1" max="30"></div>
+          <div class="fld"><label>WC — plocha (m²)</label><input type="number" id="dwc" value="2" min="1" max="15"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABS 1–6 dynamicky -->
+  <div class="pg" id="pg1"></div>
+  <div class="pg" id="pg2"></div>
+  <div class="pg" id="pg3"></div>
+  <div class="pg" id="pg4"></div>
+  <div class="pg" id="pg5"></div>
+  <div class="pg" id="pg6"></div>
+</div>
+
+<div class="bbar">
+  <div class="btxt">
+    <div class="blbl">Celkom bez DPH</div>
+    <div class="bamt" id="bamt">0 €</div>
+    <div class="bdph" id="bdph">DPH 23%: 0 €</div>
+  </div>
+  <button class="bgen" id="btnGen">Zobraziť CP →</button>
+</div>
+
+<div class="ovl" id="ovl">
+  <div class="sheet">
+    <div class="shdr"><h2>Cenová ponuka</h2><button class="bx" id="btnX">✕</button></div>
+    <div class="smeta"><div class="slogo">WATERIO</div><p id="smeta"></p></div>
+    <div class="sbody" id="sbody"></div>
+    <div class="stots" id="stots"></div>
+    <div class="sacts"><button class="bpr" id="btnPr">Tlačiť / PDF</button><button class="bcp" id="btnCp">Kopírovať</button></div>
+  </div>
+</div>
+
+<script>
+// ─── CP NUMBER AUTO ──────────────────────────────────────────────────────────
+var LS = window.localStorage;
+function initCP(){
+  var now = new Date();
+  var yy = String(now.getFullYear()).slice(-2);
+  var mm = String(now.getMonth()+1).padStart(2,'0');
+  var key = 'wcp_seq_'+yy+mm;
+  var seq = parseInt(LS.getItem(key)||'0') + 1;
+  LS.setItem(key, seq);
+  var cpStr = yy+mm+String(seq).padStart(2,'0');
+  document.getElementById('cpn').value = cpStr;
+  document.getElementById('cpd').textContent = 'CP '+cpStr;
+  document.getElementById('cpbadge').textContent = 'auto';
+  document.getElementById('cpdate').value = now.toISOString().split('T')[0];
+}
+document.getElementById('cpn').addEventListener('input',function(){
+  document.getElementById('cpd').textContent = this.value ? 'CP '+this.value : 'CP —';
+});
+
+// ─── KUPELNA TYPE ────────────────────────────────────────────────────────────
+var kupType = 'spolu';
+function setKup(t, el){
+  kupType = t;
+  document.querySelectorAll('.ktbtn').forEach(function(b){ b.classList.remove('on'); });
+  el.classList.add('on');
+  document.getElementById('kup-spolu-info').style.display = t==='spolu'?'block':'none';
+  document.getElementById('kup-osobit-info').style.display = t==='osobit'?'block':'none';
+  document.getElementById('kup-osobit-fields').style.display = t==='osobit'?'block':'none';
+  calc();
+}
+
+// ─── DIMS ────────────────────────────────────────────────────────────────────
+function gv(id){ var e=document.getElementById(id); return e?(parseFloat(e.value)||0):0; }
+function kupTotal(){ return kupType==='osobit' ? gv('dk2')+gv('dwc') : gv('dk'); }
+function kupSteny(){ var k=kupTotal(); return Math.sqrt(k)*4*gv('dv')*0.75; }
+function getDim(base){
+  var p=gv('dp'), v=gv('dv'), ob=gv('do_'), m=gv('dm'), d=gv('dd');
+  if(base==='plocha') return p;
+  if(base==='steny') return ob*v;
+  if(base==='ststrop') return ob*v+p;
+  if(base==='kupM') return kupTotal();
+  if(base==='kupS') return kupSteny();
+  if(base==='obvod') return ob;
+  if(base==='miest') return m;
+  if(base==='dvere') return d;
+  if(base==='fix1') return 1;
+  return 0;
+}
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+// Each row: {sel: 'none'|'a'|..., qty: number (null=auto), multiRows: [...]}
+var ROW_STATE = {};
+
+function getRowQty(rid, base){
+  var s = ROW_STATE[rid];
+  if(s && s.qty !== null && s.qty !== undefined) return s.qty;
+  return getDim(base);
+}
+
+function getRowPrice(rid, base, variants){
+  var s = ROW_STATE[rid];
+  if(!s || s.sel==='none') return 0;
+  var vr = variants.find(function(v){ return v.k===s.sel; });
+  if(!vr || !vr.p) return 0;
+  return vr.p * getRowQty(rid, base);
+}
+
+// Multi-rows for podlahy and steny
+var PODL_ROWS = [{type:'laminat', m2:null}]; // null = auto (full floor)
+var STENA_ROWS = [{type:'komplet', m2:null}]; // null = auto
+
+var PODL_TYPES = [
+  {k:'laminat',l:'Laminát / vinyl',p:10},
+  {k:'dlazba', l:'Keramická dlažba',p:30},
+  {k:'parkety',l:'Drevené parkety',p:28},
+  {k:'renov',  l:'Renovácia dreva',p:28},
+  {k:'spc',    l:'SPC / rigid',p:18},
+  {k:'korok',  l:'Korok',p:22}
+];
+var STENA_TYPES = [
+  {k:'none',    l:'Nerobiť',p:0},
+  {k:'farba',   l:'Len ošk. farba',p:3.5},
+  {k:'sietka',  l:'+ nová sieťka',p:9.5},
+  {k:'omietnik',l:'Na omietnik',p:13},
+  {k:'stierka', l:'Stierka 2×',p:11},
+  {k:'komplet', l:'Omietka + stierka',p:28}
+];
+
+// ─── SECS DATA ───────────────────────────────────────────────────────────────
+var SECS = [
+  {tab:1, id:'bur', label:'Búracie práce', num:'01', rows:[
+    {id:'oskr', name:'Ošk. farby stien', hint:'Plocha stien', unit:'m2', base:'steny', v:[{k:'none',l:'Nerobiť',p:0},{k:'a',l:'Ošk. farba — 3.5€',p:3.5},{k:'b',l:'Ošk. + sieťka — 9.5€',p:9.5},{k:'c',l:'Zbúranie + omietka — 22€',p:22}]},
+    {id:'dpr', name:'Demontáž priečok', hint:'Zadaj m²', unit:'m2', base:'man', v:[{k:'none',l:'Nerobiť',p:0},{k:'a',l:'Búranie — 18€/m²',p:18}]},
+    {id:'ddl', name:'Demontáž podlahy', hint:'Plocha bytu', unit:'m2', base:'plocha', v:[{k:'none',l:'Nerobiť',p:0},{k:'a',l:'Linoleum — 8€',p:8},{k:'b',l:'Keramická dlažba — 15€',p:15},{k:'c',l:'Parkety — 10€',p:10}]},
+    {id:'dob', name:'Demontáž obkladu', hint:'Steny kúpeľne', unit:'m2', base:'kupS', v:[{k:'none',l:'Nerobiť',p:0},{k:'a',l:'Demontáž — 10€/m²',p:10}]},
+    {id:'dwc', name:'Dem. WC / vaňa / umývadlo', hint:'Počet ks', unit:'ks', base:'man', v:[{k:'none',l:'Nerobiť',p:0},{k:'a',l:'WC — 35€/ks',p:35},{k:'b',l:'Vaňa — 70€/ks',p:70},{k:'c',l:'Umývadlo — 25€/ks',p:25}]},
+    {id:'dzar', name:'Demontáž zárubní', hint:'Počet ks', unit:'ks', base:'man', v:[{k:'none',l:'Nerobiť',p:0},{k:'a',l:'Demontáž — 90€/ks',p:90}]},
+    {id:'vvz', name:'Vývoz a likvidácia sute', hint:'Objem', unit:'ks', base:'fix1', v:[{k:'none',l:'Nerobiť',p:0},{k:'a',l:'Malý — 350€',p:350},{k:'b',l:'Stredný — 750€',p:750},{k:'c',l:'Veľký — 1300€',p:1300}]}
+  ]},
+  {tab:2, id:'kon', label:'Murovanie / Priečky', num:'03', rows:[
+    {id:'npr', name:'Nová priečka porobetón', hint:'Zadaj m²', unit:'m2', base:'man', v:[{k:'none',l:'Nerobiť',p:0},{k:'a',l:'100mm — 51€/m²',p:51},{k:'b',l:'150mm — 61€/m²',p:61}]},
+    {id:'nprop', name:'Opláštenie priečky SDK', hint:'Jedno- alebo dvojité', unit:'m2', base:'man', v:[{k:'none',l:'Nerobiť',p:0},{k:'a',l:'1× opláštenie — 19€',p:19},{k:'b',l:'2× opláštenie — 26€',p:26}]},
+    {id:'prk', name:'Osadenie prekladu', hint:'Počet ks', unit:'ks', base:'man', v:[{k:'none',l:'Nerobiť',p:0},{k:'a',l:'Preklad — 79€/ks',p:79}]},
+    {id:'sdkst', name:'SDK strop', hint:'Plocha stropu', unit:'m2', base:'plocha', v:[{k:'none',l:'Nerobiť',p:0},{k:'a',l:'1× opláštenie — 35€',p:35}]}
+  ]},
+  {tab:3, id:'ins', label:'Inštalácie (subdodávky)', num:'04–05', rows:[
+    {id:'el', name:'Elektroinštalácia', hint:'€/m² bytu', unit:'m2', base:'plocha', v:[{k:'none',l:'Nerobiť',p:0},{k:'a',l:'Čiastočná — 35€/m²',p:35},{k:'b',l:'Kompletná — 65€/m²',p:65.5}]},
+    {id:'vo', name:'Vodoinštalácia', hint:'€/m² bytu', unit:'m2', base:'plocha', v:[{k:'none',l:'Nerobiť',p:0},{k:'a',l:'Čiastočná — 18€/m²',p:18},{k:'b',l:'Kompletná — 35€/m²',p:35.3}]},
+    {id:'ku', name:'Vykurovanie / radiátory', hint:'Počet kusov', unit:'ks', base:'miest', v:[{k:'none',l:'Nerobiť',p:0},{k:'a',l:'Presunutie — 195€/ks',p:195},{k:'b',l:'Výmena — 280€/ks',p:280}]}
+  ]},
+  {tab:4, id:'pov', label:'Steny a povrchy', num:'07', rows:[
+    // STENY = special multi-row, handled separately
+    {id:'roh', name:'Rohové lišty / rohovníky', hint:'Dĺžka vonk. rohov', unit:'bm', base:'obvod', v:[{k:'none',l:'Nerobiť',p:0},{k:'a',l:'Rohovníky — 4€/bm',p:4}]},
+    {id:'akr', name:'Akrylový tmel rohov', hint:'Vnútorné rohy', unit:'bm', base:'obvod', v:[{k:'none',l:'Nerobiť',p:0},{k:'a',l:'Akryl tmel — 2€/bm',p:2}]},
+    {id:'spa', name:'Špalety (okná/dvere)', hint:'Zadaj bm', unit:'bm', base:'man', v:[{k:'none',l:'Nerobiť',p:0},{k:'a',l:'Špalety — 14€/bm',p:14}]},
+    {id:'stst', name:'Stierkovanie stropu', hint:'Plocha stropu', unit:'m2', base:'plocha', v:[{k:'none',l:'Nerobiť',p:0},{k:'a',l:'Stierka 2× + brúsenie — 12€',p:12}]}
+  ]},
+  {tab:5, id:'kup', label:'Kúpeľňa', num:'08–11', rows:[
+    {id:'hip', name:'Hydroizolácia podlahy', hint:'Plocha kúpeľne', unit:'m2', base:'kupM', v:[{k:'none',l:'Nerobiť',p:0},{k:'a',l:'HI 2× náter — 10€/m²',p:10}]},
+    {id:'his', name:'Hydroizolácia stien', hint:'Mokrá zóna', unit:'m2', base:'kupS', v:[{k:'none',l:'Nerobiť',p:0},{k:'a',l:'HI steny — 10€/m²',p:10}]},
+    {id:'obk', name:'Keramický obklad stien', hint:'Steny kúpeľne', unit:'m2', base:'kupS', v:[{k:'none',l:'Nerobiť',p:0},{k:'a',l:'Štandard — 28€/m²',p:28},{k:'b',l:'Veľkoformátový — 38€',p:38}]},
+    {id:'dlk', name:'Keramická dlažba (kúpeľňa)', hint:'Plocha kúpeľne', unit:'m2', base:'kupM', v:[{k:'none',l:'Nerobiť',p:0},{k:'a',l:'Štandard — 30€/m²',p:30},{k:'b',l:'Veľký formát — 40€',p:40}]},
+    {id:'spar', name:'Škárovanie (špárovanie)', hint:'Plocha obkladu + dlažby', unit:'m2', base:'kupS', v:[{k:'none',l:'Nerobiť',p:0},{k:'a',l:'Škárovanie — 3€/m²',p:3}]},
+    {id:'silik', name:'Silikónovanie (kúty, vana)', hint:'Dĺžka bm', unit:'bm', base:'man', v:[{k:'none',l:'Nerobiť',p:0},{k:'a',l:'Silikón — 3€/bm',p:3}]},
+    {id:'wc', name:'Inštalácia WC', hint:'Ks', unit:'ks', base:'fix1', v:[{k:'none',l:'Nerobiť',p:0},{k:'a',l:'WC — 55€',p:55}]},
+    {id:'spl', name:'Podomietkový splachovač', hint:'Geberit/Alcaplast', unit:'ks', base:'fix1', v:[{k:'none',l:'Nerobiť',p:0},{k:'a',l:'Splachovač — 85€',p:85}]},
+    {id:'revd', name:'Revízne dvierka', hint:'Počet ks', unit:'ks', base:'man', v:[{k:'none',l:'Nerobiť',p:0},{k:'a',l:'Revízne dvierka — 55€/ks',p:55}]},
+    {id:'umy', name:'Umývadlo', hint:'Osadenie + batéria', unit:'ks', base:'fix1', v:[{k:'none',l:'Nerobiť',p:0},{k:'a',l:'Umývadlo — 60€',p:60}]},
+    {id:'spr', name:'Sprchový kút / vaňa', hint:'Výber', unit:'ks', base:'fix1', v:[{k:'none',l:'Nerobiť',p:0},{k:'a',l:'Sprchovacia zástena — 100€',p:100},{k:'b',l:'Vaňa — 220€',p:220},{k:'c',l:'Murovaná sprcha — 180€',p:180}]},
+    {id:'spad', name:'Spád sprchovej vaničky', hint:'Vyspádovanie', unit:'ks', base:'fix1', v:[{k:'none',l:'Nerobiť',p:0},{k:'a',l:'Vyspádovanie — 120€',p:120}]},
+    {id:'bat', name:'Batérie', hint:'Počet ks', unit:'ks', base:'man', v:[{k:'none',l:'Nerobiť',p:0},{k:'a',l:'Nadomietková — 45€',p:45},{k:'b',l:'Podomietková — 110€',p:110}]},
+    {id:'prd', name:'SDK predstena', hint:'Skrytie rozvodov', unit:'ks', base:'fix1', v:[{k:'none',l:'Nerobiť',p:0},{k:'a',l:'Predstena — 90€',p:90}]}
+  ]},
+  {tab:6, id:'fin', label:'Finálne práce', num:'12–13', rows:[
+    {id:'dv', name:'Osadenie dverí + zárubne', hint:'Počet dverí', unit:'ks', base:'dvere', v:[{k:'none',l:'Nerobiť',p:0},{k:'a',l:'Obložková — 120€/ks',p:120},{k:'b',l:'Vmurovaná — 90€/ks',p:90}]},
+    {id:'mal', name:'Maľovanie stien + strop', hint:'Steny + strop', unit:'m2', base:'ststrop', v:[{k:'none',l:'Nerobiť',p:0},{k:'a',l:'Maľovanie + penetrácia — 5.7€',p:5.7}]},
+    {id:'pot', name:'Cementový poter', hint:'Plocha bytu', unit:'m2', base:'plocha', v:[{k:'none',l:'Nerobiť',p:0},{k:'a',l:'Poter do 60mm — 18€/m²',p:18}]},
+    {id:'niv', name:'Nivelácia podlahy', hint:'Plocha bytu', unit:'m2', base:'plocha', v:[{k:'none',l:'Nerobiť',p:0},{k:'a',l:'Nivelácia — 10€/m²',p:10}]},
+    {id:'sok', name:'Podlahový sokl', hint:'Obvod (bm)', unit:'bm', base:'obvod', v:[{k:'none',l:'Nerobiť',p:0},{k:'a',l:'Keramický — 27€/bm',p:27},{k:'b',l:'PVC/drevený — 7€/bm',p:7}]},
+    {id:'psk', name:'Páska vnút. rohov', hint:'Dĺžka rohov', unit:'bm', base:'obvod', v:[{k:'none',l:'Nerobiť',p:0},{k:'a',l:'Páska rohov — 9€/bm',p:9}]},
+    {id:'sparF', name:'Škárovanie podlahy (mimo kúp.)', hint:'Plocha (m²)', unit:'m2', base:'man', v:[{k:'none',l:'Nerobiť',p:0},{k:'a',l:'Škárovanie — 3€/m²',p:3}]},
+    {id:'silikF', name:'Silikónovanie (lišty, rohy)', hint:'Zadaj bm', unit:'bm', base:'man', v:[{k:'none',l:'Nerobiť',p:0},{k:'a',l:'Silikón — 3€/bm',p:3}]}
+  ]}
+];
+
+// Init ROW_STATE
+SECS.forEach(function(s){ s.rows.forEach(function(r){ ROW_STATE[r.id]={sel:'none', qty:null}; }); });
+ROW_STATE['silik'] = {sel:'none', qty:8};
+ROW_STATE['revd']  = {sel:'none', qty:1};
+ROW_STATE['bat']   = {sel:'none', qty:2};
+ROW_STATE['dwc']   = {sel:'none', qty:1};
+
+// ─── STENA MULTI ─────────────────────────────────────────────────────────────
+function stenaTotal(){ return STENA_ROWS.reduce(function(a,r){ return a+(r.m2||0); },0); }
+function stenaRemainder(){ var tot=getDim('steny'); return Math.max(0, tot - stenaTotal()); }
+function stenaPriceTotal(){
+  var tot=0;
+  STENA_ROWS.forEach(function(r){
+    var t=STENA_TYPES.find(function(x){return x.k===r.type;});
+    if(t&&t.p&&r.m2) tot+=t.p*r.m2;
+  });
+  return tot;
+}
+
+// ─── PODL MULTI ──────────────────────────────────────────────────────────────
+function podlTotal(){ return PODL_ROWS.reduce(function(a,r){ return a+(r.m2||0); },0); }
+function podlRemainder(){ var tot=getDim('plocha'); return Math.max(0, tot - podlTotal()); }
+function podlPriceTotal(){
+  var tot=0;
+  PODL_ROWS.forEach(function(r){
+    var t=PODL_TYPES.find(function(x){return x.k===r.type;});
+    if(t&&r.m2) tot+=t.p*r.m2;
+  });
+  return tot;
+}
+
+// ─── CALC ────────────────────────────────────────────────────────────────────
+function fmt(n){ return Math.round(n).toLocaleString('sk-SK')+' €'; }
+function calc(){
+  var grand=0;
+  SECS.forEach(function(s){
+    var st=0;
+    s.rows.forEach(function(r){
+      var pp=getRowPrice(r.id, r.base, r.v);
+      st+=pp; grand+=pp;
+    });
+    if(s.id==='pov'){ var pp=stenaPriceTotal(); st+=pp; grand+=pp; }
+    if(s.id==='fin'){ var pp=podlPriceTotal(); st+=pp; grand+=pp; }
+    var el=document.getElementById('et'+s.id); if(el) el.textContent=st>0?fmt(st):'';
+  });
+  document.getElementById('bamt').textContent=fmt(grand);
+  document.getElementById('bdph').textContent='DPH 23%: '+fmt(grand*0.23);
+  updateStenaRemainder();
+  updatePodlRemainder();
+}
+
+function updateStenaRemainder(){
+  var rem=stenaRemainder();
+  document.querySelectorAll('.stena-rem').forEach(function(el){ el.textContent=rem>0?'Zostatok '+Math.round(rem)+' m² nie je priradený':'✓ Celá plocha priradená'; el.style.color=rem>0?'var(--org)':'var(--grn)'; });
+}
+function updatePodlRemainder(){
+  var rem=podlRemainder();
+  document.querySelectorAll('.podl-rem').forEach(function(el){ el.textContent=rem>0?'Zostatok '+Math.round(rem)+' m² nie je priradený':'✓ Celá plocha priradená'; el.style.color=rem>0?'var(--org)':'var(--grn)'; });
+}
+
+function getRowPrice(rid, base, variants){
+  var s=ROW_STATE[rid]; if(!s||s.sel==='none') return 0;
+  var vr=variants.find(function(v){return v.k===s.sel;}); if(!vr||!vr.p) return 0;
+  var q = (base==='man') ? (s.qty||0) : getDim(base);
+  if(s.qty!==null&&s.qty!==undefined&&base!=='man') q=s.qty;
+  return vr.p*q;
+}
+
+// ─── SET VARIANT ─────────────────────────────────────────────────────────────
+function setV(rid, k){
+  if(!ROW_STATE[rid]) ROW_STATE[rid]={sel:'none',qty:null};
+  ROW_STATE[rid].sel=k;
+  var row=null; SECS.forEach(function(s){s.rows.forEach(function(r){if(r.id===rid)row=r;})});
+  if(!row) return;
+  row.v.forEach(function(vr){
+    var b=document.getElementById('b'+rid+vr.k); if(!b) return;
+    b.className='vbtn'+(vr.k==='none'?' non':'')+(vr.k===k?' on':'');
+  });
+  var qw=document.getElementById('qw'+rid); if(qw) qw.style.display=(k!=='none'?'flex':'none');
+  calc();
+}
+
+function setQty(rid, val, base){
+  if(!ROW_STATE[rid]) ROW_STATE[rid]={sel:'none',qty:null};
+  var v=parseFloat(val);
+  ROW_STATE[rid].qty = isNaN(v)?null:v;
+  calc();
+}
+
+// ─── TOGGLE ETAPA ────────────────────────────────────────────────────────────
+function tog(sid){
+  var b=document.getElementById('eb'+sid), c=document.getElementById('ec'+sid);
+  if(!b||!c) return;
+  if(b.classList.contains('op')){b.classList.remove('op');c.classList.remove('op');}
+  else{b.classList.add('op');c.classList.add('op');}
+}
+
+// ─── RENDER STENA ROWS ───────────────────────────────────────────────────────
+function renderStenaRows(){
+  var cont=document.getElementById('stena-cont'); if(!cont) return;
+  var total=getDim('steny');
+  cont.innerHTML='';
+  STENA_ROWS.forEach(function(row,i){
+    var div=document.createElement('div'); div.className='mitem';
+    var sel='<select onchange="STENA_ROWS['+i+'].type=this.value;calc()">';
+    STENA_TYPES.forEach(function(t){ sel+='<option value="'+t.k+'"'+(t.k===row.type?' selected':'')+'>'+t.l+(t.p?' ('+t.p+'€/m²)':'')+' </option>'; });
+    sel+='</select>';
+    var inp='<input type="number" value="'+(row.m2||'')+'" min="0" max="'+Math.ceil(total)+'" placeholder="m²" oninput="STENA_ROWS['+i+'].m2=parseFloat(this.value)||0;calc();renderStenaRows()">';
+    var del=STENA_ROWS.length>1?'<button class="del" onclick="STENA_ROWS.splice('+i+',1);renderStenaRows();calc()">×</button>':'';
+    div.innerHTML=sel+inp+'<span class="qu">m²</span>'+del;
+    cont.appendChild(div);
+  });
+  var rem=stenaRemainder();
+  var ri=document.createElement('div'); ri.className='stena-rem'; ri.style.fontSize='11px'; ri.style.marginTop='3px';
+  ri.textContent=rem>0?'Zostatok '+Math.round(rem)+' m² nie je priradený':'✓ Celá plocha priradená';
+  ri.style.color=rem>0?'var(--org)':'var(--grn)';
+  cont.appendChild(ri);
+  if(rem>0){
+    var ba=document.createElement('button'); ba.className='btn-add';
+    ba.textContent='+ Pridať variant pre zostatok ('+Math.round(rem)+' m²)';
+    ba.onclick=function(){ STENA_ROWS.push({type:'farba',m2:Math.round(rem)}); renderStenaRows(); calc(); };
+    cont.appendChild(ba);
+  }
+}
+
+function addStenaRow(){ STENA_ROWS.push({type:'farba',m2:0}); renderStenaRows(); calc(); }
+
+// ─── RENDER PODL ROWS ────────────────────────────────────────────────────────
+function renderPodlRows(){
+  var cont=document.getElementById('podl-cont'); if(!cont) return;
+  var total=getDim('plocha');
+  cont.innerHTML='';
+  PODL_ROWS.forEach(function(row,i){
+    var div=document.createElement('div'); div.className='mitem';
+    var sel='<select onchange="PODL_ROWS['+i+'].type=this.value;calc()">';
+    PODL_TYPES.forEach(function(t){ sel+='<option value="'+t.k+'"'+(t.k===row.type?' selected':'')+'>'+t.l+' ('+t.p+'€/m²)</option>'; });
+    sel+='</select>';
+    var inp='<input type="number" value="'+(row.m2||'')+'" min="0" max="'+Math.ceil(total)+'" placeholder="m²" oninput="PODL_ROWS['+i+'].m2=parseFloat(this.value)||0;calc();renderPodlRows()">';
+    var del=PODL_ROWS.length>1?'<button class="del" onclick="PODL_ROWS.splice('+i+',1);renderPodlRows();calc()">×</button>':'';
+    div.innerHTML=sel+inp+'<span class="qu">m²</span>'+del;
+    cont.appendChild(div);
+  });
+  var rem=podlRemainder();
+  var ri=document.createElement('div'); ri.className='podl-rem'; ri.style.fontSize='11px'; ri.style.marginTop='3px';
+  ri.textContent=rem>0?'Zostatok '+Math.round(rem)+' m² nie je priradený':'✓ Celá plocha priradená';
+  ri.style.color=rem>0?'var(--org)':'var(--grn)';
+  cont.appendChild(ri);
+  if(rem>0){
+    var ba=document.createElement('button'); ba.className='btn-add';
+    ba.textContent='+ Pridať typ pre zostatok ('+Math.round(rem)+' m²)';
+    ba.onclick=function(){ PODL_ROWS.push({type:'laminat',m2:Math.round(rem)}); renderPodlRows(); calc(); };
+    cont.appendChild(ba);
+  }
+}
+function addPodlRow(){ PODL_ROWS.push({type:'laminat',m2:0}); renderPodlRows(); calc(); }
+
+// ─── BUILD UI ────────────────────────────────────────────────────────────────
+function buildUI(){
+  SECS.forEach(function(s){
+    var pg=document.getElementById('pg'+s.tab); if(!pg) return;
+    var wrap=document.createElement('div'); wrap.className='etapa';
+    var numStr=s.num.replace(/[^0-9].*/,'');
+    var rowsHTML='';
+
+    // Special stena block in povrchy
+    if(s.id==='pov'){
+      rowsHTML+='<div class="wrow"><div class="wname">Úprava stien</div><div class="whint">Nastav variant pre každú časť stien · m²</div><div class="mblock" id="stena-cont"></div><button class="btn-add" onclick="addStenaRow()">+ Pridať ďalší variant stien</button></div>';
+    }
+    // Special podlaha block in finale
+    if(s.id==='fin'){
+      rowsHTML+='<div class="wrow"><div class="wname">Pokládka podlahy</div><div class="whint">Pridaj riadok pre každý typ podlahy · m²</div><div class="mblock" id="podl-cont"></div><button class="btn-add" onclick="addPodlRow()">+ Pridať ďalší typ podlahy</button></div>';
+    }
+
+    s.rows.forEach(function(r){
+      var isMan=(r.base==='man');
+      var defaultQty=isMan?(ROW_STATE[r.id]&&ROW_STATE[r.id].qty!=null?ROW_STATE[r.id].qty:0):0;
+      var btns=''; r.v.forEach(function(vr){ btns+='<button class="vbtn'+(vr.k==='none'?' non':'')+'" id="b'+r.id+vr.k+'" onclick="setV(\''+r.id+'\',\''+vr.k+'\')">'+vr.l+'</button>'; });
+      // qty row: manual or auto
+      var qw='';
+      if(isMan){
+        qw='<div class="qrow" id="qw'+r.id+'" style="display:none"><label>Množstvo:</label><input type="number" value="'+defaultQty+'" min="0" oninput="setQty(\''+r.id+'\',this.value,\'man\')"><span class="qu">'+r.unit+'</span></div>';
+      } else {
+        qw='<div class="qrow" id="qw'+r.id+'" style="display:none"><label>Množstvo:</label><input type="number" id="qty'+r.id+'" min="0" placeholder="" oninput="setQty(\''+r.id+'\',this.value,\''+r.base+'\')"><span class="qu">'+r.unit+'</span><span class="qdim" id="qdim'+r.id+'"></span></div>';
+      }
+      rowsHTML+='<div class="wrow"><div class="wname">'+r.name+'</div><div class="whint">'+r.hint+' · '+r.unit+'</div><div class="vbtns">'+btns+'</div>'+qw+'</div>';
+    });
+
+    wrap.innerHTML='<div class="ehdr" onclick="tog(\''+s.id+'\')"><div class="enum">'+numStr+'</div><div class="ename">'+s.label+'</div><div class="etot" id="et'+s.id+'"></div><div class="echev op" id="ec'+s.id+'">⌄</div></div><div class="ebody op" id="eb'+s.id+'">'+rowsHTML+'</div>';
+    pg.appendChild(wrap);
+  });
+
+  // Update auto qty displays and show qty row when variant != none (but none)
+  SECS.forEach(function(s){
+    s.rows.forEach(function(r){
+      if(r.base!=='man'){
+        var el=document.getElementById('qdim'+r.id); if(el){ el.textContent='Auto: '+Math.round(getDim(r.base))+' '+r.unit; }
+        var qi=document.getElementById('qty'+r.id);
+        if(qi&&qi.value==='') qi.placeholder=Math.round(getDim(r.base));
+      }
+    });
+  });
+
+  renderStenaRows();
+  renderPodlRows();
+}
+
+// Show qty row when variant is selected
+function setV(rid, k){
+  if(!ROW_STATE[rid]) ROW_STATE[rid]={sel:'none',qty:null};
+  ROW_STATE[rid].sel=k;
+  var row=null; SECS.forEach(function(s){s.rows.forEach(function(r){if(r.id===rid)row=r;})});
+  if(!row) return;
+  row.v.forEach(function(vr){
+    var b=document.getElementById('b'+rid+vr.k); if(!b) return;
+    b.className='vbtn'+(vr.k==='none'?' non':'')+(vr.k===k?' on':'');
+  });
+  var qw=document.getElementById('qw'+rid);
+  if(qw){ qw.style.display=(k!=='none'?'flex':'none'); }
+  // Set default placeholder for auto
+  if(row.base!=='man'){
+    var qi=document.getElementById('qty'+rid);
+    if(qi&&qi.value==='') qi.placeholder=Math.round(getDim(row.base));
+  }
+  calc();
+}
+
+// ─── TABS ────────────────────────────────────────────────────────────────────
+function switchTab(i){
+  document.querySelectorAll('.pg').forEach(function(el,j){el.classList.toggle('on',j===i);});
+  document.querySelectorAll('.tab').forEach(function(el){el.classList.toggle('on',parseInt(el.dataset.i)===i);});
+  // Refresh placeholders
+  SECS.forEach(function(s){
+    s.rows.forEach(function(r){
+      if(r.base!=='man'){
+        var el=document.getElementById('qdim'+r.id); if(el) el.textContent='Auto: '+Math.round(getDim(r.base))+' '+r.unit;
+        var qi=document.getElementById('qty'+r.id); if(qi&&qi.value==='') qi.placeholder=Math.round(getDim(r.base));
+      }
+    });
+  });
+  renderStenaRows();
+  renderPodlRows();
+}
+
+// ─── SUMMARY ─────────────────────────────────────────────────────────────────
+function openSummary(){
+  var n=document.getElementById('cpn').value||'—';
+  var nm=document.getElementById('cname').value||'—';
+  var ad=document.getElementById('caddr').value||'';
+  var dt=document.getElementById('cpdate').value||'';
+  document.getElementById('smeta').textContent='CP '+n+' · '+nm+(ad?' · '+ad:'')+' · '+dt;
+  var body=''; var grand=0;
+  SECS.forEach(function(s){
+    var st=0; var lines='';
+    s.rows.forEach(function(r){
+      var pp=getRowPrice(r.id,r.base,r.v); if(!pp) return;
+      var q=(r.base==='man')?(ROW_STATE[r.id].qty||0):(ROW_STATE[r.id].qty!=null?ROW_STATE[r.id].qty:getDim(r.base));
+      lines+='<div class="sline"><span class="nm">'+r.name+'</span><span class="un">'+Math.round(q)+' '+r.unit+'</span><span class="pr">'+fmt(pp)+'</span></div>';
+      st+=pp; grand+=pp;
+    });
+    if(s.id==='pov'){
+      var pp=stenaPriceTotal(); if(pp){
+        STENA_ROWS.forEach(function(row){ var t=STENA_TYPES.find(function(x){return x.k===row.type;}); if(t&&t.p&&row.m2>0){ lines+='<div class="sline"><span class="nm">Steny — '+t.l+'</span><span class="un">'+row.m2+' m²</span><span class="pr">'+fmt(t.p*row.m2)+'</span></div>'; } });
+        st+=pp; grand+=pp;
+      }
+    }
+    if(s.id==='fin'){
+      var pp=podlPriceTotal(); if(pp){
+        PODL_ROWS.forEach(function(row){ var t=PODL_TYPES.find(function(x){return x.k===row.type;}); if(t&&row.m2>0){ lines+='<div class="sline"><span class="nm">Podlaha — '+t.l+'</span><span class="un">'+row.m2+' m²</span><span class="pr">'+fmt(t.p*row.m2)+'</span></div>'; } });
+        st+=pp; grand+=pp;
+      }
+    }
+    if(st) body+='<div class="stit">Etapa '+s.num+' — '+s.label+'</div>'+lines;
+  });
+  document.getElementById('sbody').innerHTML=body||'<p style="padding:14px 0;color:#5a6a7e;font-size:13px">Žiadne práce nie sú vybrané.</p>';
+  document.getElementById('stots').innerHTML='<div class="trow"><span>Celkom bez DPH</span><span>'+fmt(grand)+'</span></div><div class="trow"><span>DPH 23%</span><span>'+fmt(grand*0.23)+'</span></div><div class="trow big"><span>CELKOM s DPH</span><span>'+fmt(grand*1.23)+'</span></div>';
+  document.getElementById('ovl').classList.add('op');
+}
+function closeSummary(){ document.getElementById('ovl').classList.remove('op'); }
+function copyCP(){
+  var n=document.getElementById('cpn').value||'—';
+  var nm=document.getElementById('cname').value||'—';
+  var txt='WATERIO — CENOVÁ PONUKA '+n+'\nZákazník: '+nm+'\n'; var grand=0;
+  SECS.forEach(function(s){
+    var lines=[];
+    s.rows.forEach(function(r){ var pp=getRowPrice(r.id,r.base,r.v); if(!pp) return; var q=(r.base==='man')?(ROW_STATE[r.id].qty||0):(ROW_STATE[r.id].qty!=null?ROW_STATE[r.id].qty:getDim(r.base)); lines.push('  '+r.name+': '+Math.round(q)+' '+r.unit+' = '+Math.round(pp)+' €'); grand+=pp; });
+    if(s.id==='pov'){ STENA_ROWS.forEach(function(row){ var t=STENA_TYPES.find(function(x){return x.k===row.type;}); if(t&&t.p&&row.m2>0){ lines.push('  Steny '+t.l+': '+row.m2+' m² = '+Math.round(t.p*row.m2)+' €'); grand+=t.p*row.m2; } }); }
+    if(s.id==='fin'){ PODL_ROWS.forEach(function(row){ var t=PODL_TYPES.find(function(x){return x.k===row.type;}); if(t&&row.m2>0){ lines.push('  Podlaha '+t.l+': '+row.m2+' m² = '+Math.round(t.p*row.m2)+' €'); grand+=t.p*row.m2; } }); }
+    if(lines.length) txt+='\n'+s.label+'\n'+lines.join('\n');
+  });
+  txt+='\n\nCelkom bez DPH: '+Math.round(grand)+' €\nDPH 23%: '+Math.round(grand*0.23)+' €\nCelkom s DPH: '+Math.round(grand*1.23)+' €';
+  if(navigator.clipboard) navigator.clipboard.writeText(txt).then(function(){alert('Skopírované!');});
+  else alert('Kopírovanie nie je dostupné');
+}
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
+initCP();
+buildUI();
+calc();
+
+document.getElementById('tabBar').addEventListener('click',function(e){ var t=e.target.closest('.tab'); if(t) switchTab(parseInt(t.dataset.i)); });
+['dp','dv','dk','do_','dm','dd','dk2','dwc'].forEach(function(id){ var el=document.getElementById(id); if(el) el.addEventListener('input',function(){ calc(); renderStenaRows(); renderPodlRows(); }); });
+document.getElementById('cpn').addEventListener('input',function(){ document.getElementById('cpd').textContent=this.value?'CP '+this.value:'CP —'; });
+document.getElementById('btnSum').addEventListener('click',openSummary);
+document.getElementById('btnGen').addEventListener('click',openSummary);
+document.getElementById('btnX').addEventListener('click',closeSummary);
+document.getElementById('btnPr').addEventListener('click',function(){window.print();});
+document.getElementById('btnCp').addEventListener('click',copyCP);
+document.getElementById('ovl').addEventListener('click',function(e){if(e.target===this)closeSummary();});
+</script>
+</body>
+</html>
